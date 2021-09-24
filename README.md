@@ -2,7 +2,9 @@
 
 ### プラントの伝達関数
 
-<img src="https://latex.codecogs.com/gif.latex?G=\dfrac{3}{30s+1}" /> 
+```math
+SE = \dfrac{3}{30s+1}
+```
 ![](images/step.png)
 
 ### メンバシップ関数
