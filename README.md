@@ -1,11 +1,7 @@
 # Fuzzy-PID
 
 ### プラントの伝達関数
-
-```math
-SE = \dfrac{3}{30s+1}
-```
-<pre xml:lang="latex">\sqrt{2}</pre>,
+<img src="https://latex.codecogs.com/gif.latex?G=\dfrac{3}{30s+1}" />
 ![](images/step.png)
 
 ### メンバシップ関数
