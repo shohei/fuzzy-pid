@@ -105,6 +105,12 @@ plot(ts,us(2:end));
 legend('u');
 title('u');
 
+figure();
+plot(ts,ys(2:end),'r');
+hold on;
+C=pidtune(G,'pi');
+step(feedback(G*C,1));
+legend('Fuzzy-PI','PI')
 
 big;
 
