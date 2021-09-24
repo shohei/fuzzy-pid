@@ -3,7 +3,7 @@ clear; clc; close all;
 fis = mamfis('Name',"PD control");
 
 emax = 15;
-edotmax = 3;
+edotmax = 6;
 umax = 50;
 
 k = emax;
@@ -70,7 +70,7 @@ figure();
 step(G);
 
 dt=0.1;
-ts=0:dt:10;
+ts=0:dt:30;
 r=ones(length(ts));
 ys = [0];
 es = [0];
@@ -78,15 +78,17 @@ us = [0];
 for i=1:length(ts)
     r_i = r(i);
     y_i = ys(end);
-    e_last = es(end);term
+    u_i = us(end);
+    e_last = es(end);
     e_i = r_i-y_i;
-    edot_i = e_i - e_last;
-    u = evalfis(fis,[e_i,edot_i]);
-    y = lsim(G, [u 0], [0 dt]);
+    edot_i = e_last - e_i;
+    du = evalfis(fis,[e_i,edot_i]);
+    u_i = u_i+du;
+    y = lsim(G, [u_i 0], [0 dt]);
     y = y(2);
     ys(end+1) = y;
     es(end+1) = e_i;
-    us(end+1) = u;
+    us(end+1) = u_i;
 end
 
 figure();
@@ -105,17 +107,4 @@ title('u');
 
 
 big;
-
-
-
-
-
-
-
-
-
-
-
-
-
 
