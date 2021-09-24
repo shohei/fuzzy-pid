@@ -5,6 +5,7 @@
 ```math
 SE = \dfrac{3}{30s+1}
 ```
+<pre xml:lang="latex">\sqrt{2}</pre>,
 ![](images/step.png)
 
 ### メンバシップ関数
