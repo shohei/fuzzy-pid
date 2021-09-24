@@ -1,17 +1,14 @@
 # Fuzzy-PID
 
-プラントの伝達関数
+### プラントの伝達関数
 
-$G=3/(30s+1)$
-
+<img src="https://latex.codecogs.com/gif.latex?G=\dfrac{3}{30s+1}" /> 
 ![](images/step.png)
 
-メンバシップ関数
+### メンバシップ関数
 ![](images/mf.png)
 
-
-
-ファジィ制御則
+### ファジィ制御則
 ```
                    Description          
           ______________________________
@@ -29,11 +26,10 @@ $G=3/(30s+1)$
     12    "e==PM & edot==ZO => u=PM (1)"
     13    "e==PB & edot==ZO => u=PB (1)"
 ```
-サーフェスプロット
+### サーフェスプロット
 ![](images/surf.png)
 
-
-制御結果
+### 制御結果
 ![](images/result.png)
 
 
