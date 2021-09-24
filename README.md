@@ -1,7 +1,9 @@
 # Fuzzy-PID
 
 ### プラントの伝達関数
-<img src="https://latex.codecogs.com/gif.latex?G=\dfrac{3}{30s+1}" />
+
+<img src="https://render.githubusercontent.com/render/math?math={G=\dfrac{3}{30%2B+1}}>
+
 ![](images/step.png)
 
 ### メンバシップ関数
