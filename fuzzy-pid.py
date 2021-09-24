@@ -5,6 +5,7 @@ import skfuzzy as fuzz
 from skfuzzy import control as ctrl
 import numpy as np
 import pandas as pd
+import math
 
 s = tf('s')
 G = 1/(0.8+0.3*s+s**2)
@@ -23,33 +24,41 @@ for i in range(len(t)):
     edots.append(edot_i)
 
 #PD controller
-e = ctrl.Antecedent(np.arange(-1, 1, 0.01), 'e')
-edot = ctrl.Antecedent(np.arange(-0.2, 0.2, 0.001), 'edot')
-u = ctrl.Consequent(np.arange(-1, 1, 0.01), 'u')
+emax = 1
+edotmax = 0.2
+umax = 10
+width = lambda x: 10**int(math.log10(x)-2) # 100 division
 
-e["NB"] = fuzz.trapmf(e.universe, [-1,-1, -.75, -.50])
-e["NM"] = fuzz.trimf(e.universe, [-.75, -.5, -.25])
-e["NS"] = fuzz.trimf(e.universe, [-.5, -.25, 0])
-e["ZO"] = fuzz.trimf(e.universe, [-.25, 0, .25])
-e["PS"] = fuzz.trimf(e.universe, [0, .25, .5])
-e["PM"] = fuzz.trimf(e.universe, [.25, .5, .75])
-e["PB"] = fuzz.trapmf(e.universe, [.5, .75, 1, 1])
+e = ctrl.Antecedent(np.arange(-emax, emax, width(emax)), 'e')
+edot = ctrl.Antecedent(np.arange(-edotmax, edotmax, width(edotmax)), 'edot')
+u = ctrl.Consequent(np.arange(-umax, umax, width(umax)), 'u')
 
-edot["NB"] = fuzz.trapmf(edot.universe, [-.2,-.2, -.15, -.1])
-edot["NM"] = fuzz.trimf(edot.universe, [-.15, -.1, -.05])
-edot["NS"] = fuzz.trimf(edot.universe, [-.1, -.05, 0])
-edot["ZO"] = fuzz.trimf(edot.universe, [-.05, 0, .05])
-edot["PS"] = fuzz.trimf(edot.universe, [0, .05, .1])
-edot["PM"] = fuzz.trimf(edot.universe, [.05, .1, .15])
-edot["PB"] = fuzz.trapmf(edot.universe, [.1, .15, .2, .2])
+k = emax
+e["NB"] = fuzz.trapmf(e.universe, [-k,-k, -k*3/4, -k/2])
+e["NM"] = fuzz.trimf(e.universe, [-k*3/4, -k/2, -k/4])
+e["NS"] = fuzz.trimf(e.universe, [-k/2, -k/4, 0])
+e["ZO"] = fuzz.trimf(e.universe, [-k/4, 0, k/4])
+e["PS"] = fuzz.trimf(e.universe, [0, k/4, k/2])
+e["PM"] = fuzz.trimf(e.universe, [k/4, k/2, k*3/4])
+e["PB"] = fuzz.trapmf(e.universe, [k/2, k*3/4, k, k])
 
-u["NB"] = fuzz.trapmf(u.universe, [-1,-1, -.75, -.5])
-u["NM"] = fuzz.trimf(u.universe, [-.75, -.5, -.25])
-u["NS"] = fuzz.trimf(u.universe, [-.5, -.25, 0])
-u["ZO"] = fuzz.trimf(u.universe, [-.25, 0, .25])
-u["PS"] = fuzz.trimf(u.universe, [0, .25, .5])
-u["PM"] = fuzz.trimf(u.universe, [.25, .5, .75])
-u["PB"] = fuzz.trapmf(u.universe, [.5, .75, 1, 1])
+k = edotmax
+edot["NB"] = fuzz.trapmf(edot.universe, [-k,-k, -k*3/4, -k/2])
+edot["NM"] = fuzz.trimf(edot.universe, [-k*3/4, -k/2, -k/4])
+edot["NS"] = fuzz.trimf(edot.universe, [-k/2, -k/4, 0])
+edot["ZO"] = fuzz.trimf(edot.universe, [-k/4, 0, k/4])
+edot["PS"] = fuzz.trimf(edot.universe, [0, k/4, k/2])
+edot["PM"] = fuzz.trimf(edot.universe, [k/4, k/2, k*3/4])
+edot["PB"] = fuzz.trapmf(edot.universe, [k/2, k*3/4, k, k])
+
+k = umax
+u["NB"] = fuzz.trapmf(u.universe, [-k,-k, -k*3/4, -k/2])
+u["NM"] = fuzz.trimf(u.universe, [-k*3/4, -k/2, -k/4])
+u["NS"] = fuzz.trimf(u.universe, [-k/2, -k/4, 0])
+u["ZO"] = fuzz.trimf(u.universe, [-k/4, 0, k/4])
+u["PS"] = fuzz.trimf(u.universe, [0, k/4, k/2])
+u["PM"] = fuzz.trimf(u.universe, [k/4, k/2, k*3/4])
+u["PB"] = fuzz.trapmf(u.universe, [k/2, k*3/4, k, k])
 
 e.view()
 edot.view()
@@ -148,4 +157,4 @@ for i in range(len(t)):
 plt.figure()
 plt.plot(t,ys[1:])
 plt.show()
-pdb.set_trace()
+# pdb.set_trace()
