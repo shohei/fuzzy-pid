@@ -3,12 +3,14 @@ import matplotlib.pyplot as plt
 import pdb
 import skfuzzy as fuzz
 from skfuzzy import control as ctrl
+from skfuzzy.defuzzify import defuzz
 import numpy as np
 import pandas as pd
 import math
 
 s = tf('s')
-G = 1/(0.8+0.3*s+s**2)
+# G = 1/(0.8+0.3*s+s**2)
+G = 3/(30*s+1)
 y, t = step(G)
 # plt.plot(t,y)
 r = np.ones_like(t)
@@ -24,14 +26,17 @@ for i in range(len(t)):
     edots.append(edot_i)
 
 #PD controller
-emax = 1
-edotmax = 0.2
-umax = 10
-width = lambda x: 10**int(math.log10(x)-2) # 100 division
+emax = 15*1.25
+edotmax = 3*1.25
+umax =  50*1.25
+width = lambda x: 10**int(math.log10(x)-3) # 100 division
 
-e = ctrl.Antecedent(np.arange(-emax, emax, width(emax)), 'e')
-edot = ctrl.Antecedent(np.arange(-edotmax, edotmax, width(edotmax)), 'edot')
-u = ctrl.Consequent(np.arange(-umax, umax, width(umax)), 'u')
+x_e = np.arange(-emax, emax, width(emax))
+x_edot = np.arange(-edotmax, edotmax, width(edotmax))
+x_u = np.arange(-umax, umax, width(umax))
+e = ctrl.Antecedent(x_e, 'e')
+edot = ctrl.Antecedent(x_edot, 'edot')
+u = ctrl.Consequent(x_u, 'u')
 
 k = emax
 e["NB"] = fuzz.trapmf(e.universe, [-k,-k, -k*3/4, -k/2])
@@ -70,6 +75,7 @@ indices = df.index
 rules = []
 for c in columns:
     for i in indices:
+        print("if e=={} AND e=={} then u={}".format(i,c,df[c][i]))
         rules.append(ctrl.Rule(e[i] & edot[c], u[df[c][i]]))
 
 # rule1 = ctrl.Rule(e['ZO'] & edot['NB'], u['NB'])
@@ -144,13 +150,33 @@ for i in range(len(t)):
     ei = yi-ri
     elast = es[-1]
     edot_i = ei - elast
+
+    e_level_NB = fuzz.interp_membership(x_e, e["NB"] , ei) 
+    e_level_NM = fuzz.interp_membership(x_e, e["NM"] , ei) 
+    e_level_NS = fuzz.interp_membership(x_e, e["NS"] , ei) 
+    e_level_ZO = fuzz.interp_membership(x_e, e["ZO"] , ei) 
+    e_level_PS = fuzz.interp_membership(x_e, e["PS"] , ei) 
+    e_level_PM = fuzz.interp_membership(x_e, e["PM"] , ei) 
+    e_level_PB = fuzz.interp_membership(x_e, e["PB"] , ei) 
+
+    edot_level_NB = fuzz.interp_membership(x_edot, edot["NB"] , edot_i) 
+    edot_level_NM = fuzz.interp_membership(x_edot, edot["NM"] , edot_i) 
+    edot_level_NS = fuzz.interp_membership(x_edot, edot["NS"] , edot_i) 
+    edot_level_ZO = fuzz.interp_membership(x_edot, edot["ZO"] , edot_i) 
+    edot_level_PS = fuzz.interp_membership(x_edot, edot["PS"] , edot_i) 
+    edot_level_PM = fuzz.interp_membership(x_edot, edot["PM"] , edot_i) 
+    edot_level_PB = fuzz.interp_membership(x_edot, edot["PB"] , edot_i) 
+
+    active_rule1 = np.fmin(qual_level_lo, serv_level_lo)
+
+
     pd.input['e'] = ei
     pd.input['edot'] = edot_i 
     pd.compute()
     ui = pd.output['u']
     y_t = lsim(G, [ui,0], [0,dt])
     y_next = y_t[0][0]
-    # pdb.set_trace()
+    pdb.set_trace()
     ys.append(y_next)
     es.append(ei)
 
