@@ -33,4 +33,6 @@
 ### 制御結果
 ![](images/result.png)
 
+### PI制御との比較
+![](images/comparison.png)
 
